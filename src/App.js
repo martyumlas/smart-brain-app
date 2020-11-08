@@ -29,7 +29,7 @@ export class App extends Component {
    state = {
     input: '',
     imageUrl: '',
-    boxes: []
+    box: {}
   }
 
   onImageChange = (e) => {
@@ -42,7 +42,22 @@ export class App extends Component {
   }
 
 
+  calculateFaceLocation = (data) => {
+      const face = data.outputs[0].data.regions[0].region_info.bounding_box
+      const image = document.getElementById('inputImage')
+      const width = Number(image.width)
+      const height = Number(image.height)
+      return {
+        left: face.left_col * width,
+        top: face.top_row * height,
+        right: width - (face.right_col * width),
+        bottom: height - (face.bottom_row * height)
+      }
+  }
 
+  displayFaceBox = (box) => {
+    this.setState({box: box})
+  }
 
   onInputChange = (e) => {
     this.setState({input: e.target.value})
@@ -53,13 +68,12 @@ export class App extends Component {
 
     app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
       .then(response => {
-        // console.log(response.outputs[0].data)
-        this.setState({boxes: response.outputs[0].data})
+        this.displayFaceBox(this.calculateFaceLocation(response))
 
-     
+        console.log(this.state.box)
       })
       .catch(error => {
-        // There was an error
+        console.log(error.response.data)
       });
   }
   render() {
@@ -69,12 +83,9 @@ export class App extends Component {
         <Navigation/>
         <Logo/>
         <Rank/>
-        <input type="file" name="" id="" onChange={this.onImageChange}/>
+        <input type="file" name="" id="" onChange={this.onImageChange} />
         <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-        <FaceRecognition imageUrl={this.state.imageUrl}/>
-
-
-
+        <FaceRecognition imageUrl={this.state.imageUrl} box={this.state.box}/>
       </div>
     )
   }
