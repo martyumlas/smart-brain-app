@@ -2,11 +2,10 @@ import React from 'react'
 
 export default class SignIn extends React.Component {
 
-
-
     state = {
         signInEmail : '',
         signInPassword : '',
+        error: ''
     }
 
     onEmailChange = (event) => {
@@ -18,6 +17,7 @@ export default class SignIn extends React.Component {
     }
 
     onSubmitSignIn = (e) => {
+        this.setState({error: ''})
         e.preventDefault()
         fetch('http://localhost:3000/signin', {
             method: 'post',
@@ -28,11 +28,12 @@ export default class SignIn extends React.Component {
             })
         }).then(res => res.json())
         .then( data => {
-            if(data === 'success') {
+            if(data.msg === 'success') {
+                this.props.loadUser(data.user)
                 this.props.onRouteChange('home')
-            }           
-        }).catch(e => {
-            console.log(e)
+            }else {
+              this.setState({error: data})
+            }    
         })
 
        
@@ -41,12 +42,15 @@ export default class SignIn extends React.Component {
     render() {
 
         const {onRouteChange} = this.props
+
         return (
             <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
                 <main className="pa4 black-80">
                     <form className="measure" onSubmit={this.onSubmitSignIn}>
                         <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
                             <legend className="f1 fw6 ph0 mh0">Sign In</legend>
+                            <p style={{'color' :'red'}}> {this.state.error}</p>
+                           
                             <div className="mt3">
                                 <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
                                 <input className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" required onChange={this.onEmailChange} type="email" name="email-address"  id="email-address"/>

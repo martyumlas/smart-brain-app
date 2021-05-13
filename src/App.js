@@ -34,8 +34,20 @@ const particlesOptions = {
     box: {},
     route: 'signin',
     isSignedIn: false,
+    user: {
+      id: '',
+      name: '',
+      email: '',
+      entries: 0,
+      joined: ''
+    }
   } 
 
+  loadUser = (data) => {
+    this.setState({user : data})
+
+    console.log(this.state.user)
+  } 
   onImageChange = (e) => {
     const reader = new FileReader()
 
@@ -72,6 +84,24 @@ const particlesOptions = {
 
     app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
       .then(response => {
+        
+        //send this to express
+
+        if(response) {
+          fetch('http://localhost:3000/image', {
+              method: 'PUT',
+              headers: {'Content-Type' : 'application/json'},
+              body: JSON.stringify({
+                id : this.state.user.id,
+              })
+          })
+          .then(res => res.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, {entries : count}))
+          })
+        }
+
+
         this.displayFaceBox(this.calculateFaceLocation(response))
 
         console.log(this.state.box)
@@ -100,13 +130,13 @@ const particlesOptions = {
         route === 'home' ?
         <div>
           <Logo/>
-          <Rank/>
+          <Rank name={this.state.user.name} entries={this.state.user.entries}/>
           <input type="file" name="" id="" onChange={this.onImageChange} />
           <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
           <FaceRecognition imageUrl={imageUrl} box={box}/>
         </div>
 
-        : ( route === 'signin' ? <SignIn onRouteChange={this.onRouteChange}/> : <Register onRouteChange={this.onRouteChange} /> )
+        : ( route === 'signin' ? <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser}/> : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} /> )
         }
       </div>
     )
