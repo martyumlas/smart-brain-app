@@ -27,14 +27,14 @@ const particlesOptions = {
 }
 
 
-export class App extends Component {
+ class App extends Component {
    state = {
     input: '',
     imageUrl: '',
     box: {},
     route: 'signin',
     isSignedIn: false,
-  }
+  } 
 
   onImageChange = (e) => {
     const reader = new FileReader()
@@ -106,10 +106,7 @@ export class App extends Component {
           <FaceRecognition imageUrl={imageUrl} box={box}/>
         </div>
 
-        : (
-          route === 'signin' ? <SignIn onRouteChange={this.onRouteChange}/> :
-          <Register onRouteChange={this.onRouteChange} />
-        )
+        : ( route === 'signin' ? <SignIn onRouteChange={this.onRouteChange}/> : <Register onRouteChange={this.onRouteChange} /> )
         }
       </div>
     )
