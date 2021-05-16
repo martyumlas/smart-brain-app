@@ -5,14 +5,10 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm'
 import Rank from './components/rank/Rank'
 import Particles from 'react-particles-js'
 import './App.css'
-import Clarifai from 'clarifai'
 import SignIn from './components/SignIn/SignIn'
 import Register from './components/Register/Register'
 import FaceRecognition from './components/facerecognition/FaceRecognition'
 
-const app = new Clarifai.App({
-  apiKey: 'de319c321b4a441ea089c8fee08832d4'
- });
 
 const particlesOptions = {
   particles:{
@@ -55,7 +51,7 @@ const initialState = {
     const reader = new FileReader()
 
     reader.onload = (e) => {
-      this.setState({imageUrl: e.target.result})
+      this.setState({imageUrl: e.target.result, input: e.target.result})
     }
     reader.readAsDataURL(e.target.files[0])
   }
@@ -79,13 +75,20 @@ const initialState = {
   }
 
   onInputChange = (e) => {
-    this.setState({input: e.target.value})
-
+    e.preventDefault()
+    this.setState({input: e.target.value, imageUrl : e.target.value})
   }
-  onButtonSubmit = () => {
+  onButtonSubmit = (e) => {
+    e.preventDefault()
     this.setState({imageUrl: this.state.input})
 
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+      fetch('http://localhost:3000/imageUrl', {
+        method: 'post',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({
+          input : this.state.input,
+        })
+      }).then(response => response.json())      
       .then(response => {
         
         //send this to express
@@ -114,7 +117,7 @@ const initialState = {
         console.log(this.state.box)
       })
       .catch(error => {
-        console.log(error.response.data)
+        console.log(error)
       });
   }
 
@@ -145,7 +148,7 @@ const initialState = {
         <div>
           <Logo/>
           <Rank name={this.state.user.name} entries={this.state.user.entries}/>
-          <input type="file" name="" id="" onChange={this.onImageChange} />
+          {/* <input type="file" name="" id="" onChange={this.onImageChange} /> */}
           <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
           <FaceRecognition imageUrl={imageUrl} box={box}/>
         </div>
