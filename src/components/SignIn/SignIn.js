@@ -17,8 +17,8 @@ export default class SignIn extends React.Component {
     }
 
     onSubmitSignIn = (e) => {
-        this.setState({error: ''})
         e.preventDefault()
+        this.setState({error: ''})
         fetch('http://localhost:3000/signin', {
             method: 'post',
             headers: {'Content-Type' : 'application/json'},
@@ -26,17 +26,17 @@ export default class SignIn extends React.Component {
                 email : this.state.signInEmail,
                 password: this.state.signInPassword
             })
-        }).then(res => res.json())
-        .then( data => {
-            if(data.msg === 'success') {
-                this.props.loadUser(data.user)
-                this.props.onRouteChange('home')
-            }else {
-              this.setState({error: data})
-            }    
         })
-
-       
+        .then(res => res.json())
+        .then(user => {
+            if(user.id) {
+ 
+                this.props.loadUser(user)
+                this.props.onRouteChange('home')
+            } else {
+                this.setState({error: user})
+            }
+        }).catch(e => console.log(e))
     }
   
     render() {

@@ -44,9 +44,7 @@ const particlesOptions = {
   } 
 
   loadUser = (data) => {
-    this.setState({user : data})
-
-    console.log(this.state.user)
+    this.setState({user : data})  
   } 
   onImageChange = (e) => {
     const reader = new FileReader()
