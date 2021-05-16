@@ -36,10 +36,13 @@ class Register extends Component {
             body: JSON.stringify(this.state)
         }).then(res => res.json())
         .then( user  => {
-            if(user) {
-                this.props.loadUser(user) 
+            if(user.id) {
+                localStorage.setItem('user', JSON.stringify(user))
+                this.props.loadUser() 
                 this.props.onRouteChange('home')
-            }           
+            }    else {
+                this.setState({error: user})
+            }       
         }).catch(e => {
             console.log(e)
         })

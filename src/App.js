@@ -26,6 +26,16 @@ const particlesOptions = {
   }
 }
 
+const initialState = {
+
+  user:   {
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+}
 
  class App extends Component {
    state = {
@@ -33,18 +43,13 @@ const particlesOptions = {
     imageUrl: '',
     box: {},
     route: 'signin',
-    isSignedIn: false,
-    user: {
-      id: '',
-      name: '',
-      email: '',
-      entries: 0,
-      joined: ''
-    }
+    isSignedIn: JSON.parse(localStorage.getItem('isSignedIn')),
+    user: JSON.parse(localStorage.getItem('user')),
   } 
 
-  loadUser = (data) => {
-    this.setState({user : data})  
+
+  loadUser = () => {
+    this.setState({user : JSON.parse(localStorage.getItem('user'))})  
   } 
   onImageChange = (e) => {
     const reader = new FileReader()
@@ -95,6 +100,10 @@ const particlesOptions = {
           })
           .then(res => res.json())
           .then(count => {
+
+            let loggedInUser = JSON.parse(localStorage.getItem('user'));
+            loggedInUser.entries = parseInt(count);
+            localStorage.setItem('user', JSON.stringify(loggedInUser));
             this.setState(Object.assign(this.state.user, {entries : count}))
           })
         }
@@ -110,22 +119,29 @@ const particlesOptions = {
   }
 
   onRouteChange = (route) => {
-    if(route === 'signin'){
-      this.setState({isSignedIn: false})
-    } else if (route === 'home'){
-      this.setState({isSignedIn: true})
+    if(route === 'signin') {
+      localStorage.setItem('user', initialState.user)
+      localStorage.setItem('isSignedIn', false)   
+      this.setState({isSignedIn: JSON.parse(localStorage.getItem('isSignedIn')), imageUrl : ''})
+    } else if(route === 'home') {
+      localStorage.setItem('isSignedIn', true)   
+      this.setState({isSignedIn: JSON.parse(localStorage.getItem('isSignedIn'))})
     }
+   
+
     this.setState({route: route})
   }
 
   render() {
    const {isSignedIn, imageUrl, route, box} = this.state
+
+
     return (
       <div className='App'>
         <Particles className='particles' params={particlesOptions} />
         <Navigation onRouteChange={this.onRouteChange} isSignedIn={isSignedIn}/>
         {
-        route === 'home' ?
+       isSignedIn ?
         <div>
           <Logo/>
           <Rank name={this.state.user.name} entries={this.state.user.entries}/>

@@ -30,9 +30,10 @@ export default class SignIn extends React.Component {
         .then(res => res.json())
         .then(user => {
             if(user.id) {
- 
-                this.props.loadUser(user)
+                localStorage.setItem('user', JSON.stringify(user))
+                this.props.loadUser()
                 this.props.onRouteChange('home')
+
             } else {
                 this.setState({error: user})
             }
