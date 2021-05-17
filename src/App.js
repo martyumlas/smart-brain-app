@@ -122,14 +122,14 @@ const initialState = {
   }
 
   onRouteChange = (route) => {
-    if(route === 'signin') {
-      localStorage.setItem('user', initialState.user)
+    if(route === 'signout') {
+      localStorage.setItem('user', JSON.stringify(initialState.user))
       localStorage.setItem('isSignedIn', false)   
       this.setState({isSignedIn: JSON.parse(localStorage.getItem('isSignedIn')), imageUrl : ''})
     } else if(route === 'home') {
       localStorage.setItem('isSignedIn', true)   
       this.setState({isSignedIn: JSON.parse(localStorage.getItem('isSignedIn'))})
-    }
+    } 
    
 
     this.setState({route: route})
