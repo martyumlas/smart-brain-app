@@ -82,7 +82,7 @@ const initialState = {
     e.preventDefault()
     this.setState({imageUrl: this.state.input})
 
-      fetch('http://localhost:3000/imageUrl', {
+      fetch('https://afternoon-harbor-82707.herokuapp.com/imageUrl', {
         method: 'post',
         headers: {'Content-Type' : 'application/json'},
         body: JSON.stringify({
@@ -94,7 +94,7 @@ const initialState = {
         //send this to express
 
         if(response) {
-          fetch('http://localhost:3000/image', {
+          fetch('https://afternoon-harbor-82707.herokuapp.com/image', {
               method: 'PUT',
               headers: {'Content-Type' : 'application/json'},
               body: JSON.stringify({

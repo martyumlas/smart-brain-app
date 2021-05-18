@@ -19,7 +19,7 @@ export default class SignIn extends React.Component {
     onSubmitSignIn = (e) => {
         e.preventDefault()
         this.setState({error: ''})
-        fetch('http://localhost:3000/signin', {
+        fetch('https://afternoon-harbor-82707.herokuapp.com/signin', {
             method: 'post',
             headers: {'Content-Type' : 'application/json'},
             body: JSON.stringify({
